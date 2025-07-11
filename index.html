@@ -5,13 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Badminton Match Tracker</title>
   <style>
-    body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 1em; }
-    input, select, button { width: 100%; padding: 0.5em; margin: 0.5em 0; }
+    :root {
+      color-scheme: light dark;
+    }
+    body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 1em; background: #fff; color: #000; }
+    @media (prefers-color-scheme: dark) {
+      body { background: #121212; color: #f0f0f0; }
+      th, td { border-color: #333; }
+      th { background: #1e1e1e; }
+    }
+    input, select, button { width: 100%; padding: 0.5em; margin: 0.5em 0; background: inherit; color: inherit; border: 1px solid #ccc; border-radius: 4px; }
     table { width: 100%; border-collapse: collapse; margin-top: 1em; }
     th, td { border: 1px solid #ccc; padding: 0.5em; text-align: center; }
     th { background: #f0f0f0; }
     .win { color: green; font-weight: bold; }
     .loss { color: red; font-weight: bold; }
+    button { cursor: pointer; }
   </style>
 </head>
 <body>
