@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Badminton Match Tracker</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 1em; }
+    input, select, button { width: 100%; padding: 0.5em; margin: 0.5em 0; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+    th, td { border: 1px solid #ccc; padding: 0.5em; text-align: center; }
+    th { background: #f0f0f0; }
+    .win { color: green; font-weight: bold; }
+    .loss { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h2>🏸 Badminton Match Tracker</h2>
+  <form id="matchForm">
+    <input type="date" id="date" required />
+    <input type="text" id="opponent" placeholder="Opponent(s)" required />
+    <select id="matchType" required>
+      <option value="">Select Match Type</option>
+      <option>Singles</option>
+      <option>Doubles</option>
+      <option>Mixed Doubles</option>
+    </select>
+    <input type="text" id="score" placeholder="Set scores (e.g., 21-17, 18-21, 21-19)" required />
+    <select id="outcome" required>
+      <option value="">Select Outcome</option>
+      <option>Win</option>
+      <option>Loss</option>
+    </select>
+    <input type="text" id="remarks" placeholder="Remarks (optional)" />
+    <button type="submit">Add Match</button>
+  </form>
+
+  <h3>📋 Match Records</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Opponent</th>
+        <th>Type</th>
+        <th>Score</th>
+        <th>Outcome</th>
+        <th>Remarks</th>
+      </tr>
+    </thead>
+    <tbody id="matchList"></tbody>
+  </table>
+
+  <script>
+    const matchForm = document.getElementById('matchForm');
+    const matchList = document.getElementById('matchList');
+
+    function loadMatches() {
+      const matches = JSON.parse(localStorage.getItem('badmintonMatches') || '[]');
+      matchList.innerHTML = '';
+      matches.forEach(match => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${match.date}</td>
+          <td>${match.opponent}</td>
+          <td>${match.matchType}</td>
+          <td>${match.score}</td>
+          <td class="${match.outcome.toLowerCase()}">${match.outcome}</td>
+          <td>${match.remarks}</td>
+        `;
+        matchList.appendChild(row);
+      });
+    }
+
+    matchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const match = {
+        date: document.getElementById('date').value,
+        opponent: document.getElementById('opponent').value,
+        matchType: document.getElementById('matchType').value,
+        score: document.getElementById('score').value,
+        outcome: document.getElementById('outcome').value,
+        remarks: document.getElementById('remarks').value
+      };
+      const matches = JSON.parse(localStorage.getItem('badmintonMatches') || '[]');
+      matches.unshift(match);
+      localStorage.setItem('badmintonMatches', JSON.stringify(matches));
+      matchForm.reset();
+      loadMatches();
+    });
+
+    loadMatches();
+  </script>
+</body>
+</html>
