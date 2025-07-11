@@ -3,20 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Badminton Match Tracker (Cloud Sync Fixed)</title>
+  <title>Badminton Match Tracker (Cloud Sync)</title>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
   <style>
-    :root { color-scheme: light dark; }
-    body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 1em; background: #fff; color: #000; }
-    @media (prefers-color-scheme: dark) { body { background: #121212; color: #f0f0f0; } th, td { border-color: #333; } th { background: #1e1e1e; } }
-    input, select, button { width: 100%; padding: 0.5em; margin: 0.5em 0; background: inherit; color: inherit; border: 1px solid #ccc; border-radius: 4px; }
+    body { font-family: sans-serif; max-width: 500px; margin: auto; padding: 1em; }
+    input, select, button { width: 100%; padding: 0.5em; margin: 0.5em 0; }
     table { width: 100%; border-collapse: collapse; margin-top: 1em; }
     th, td { border: 1px solid #ccc; padding: 0.5em; text-align: center; }
-    th { background: #f0f0f0; }
     .win { color: green; font-weight: bold; }
     .loss { color: red; font-weight: bold; }
-    button { cursor: pointer; }
   </style>
 </head>
 <body>
@@ -62,8 +58,7 @@
       projectId: "badminton-tracker-1e665",
       storageBucket: "badminton-tracker-1e665.appspot.com",
       messagingSenderId: "1030711020084",
-      appId: "1:1030711020084:web:20544a427e6b87206a5861",
-      measurementId: "G-95MQTVQZWL"
+      appId: "1:1030711020084:web:20544a427e6b87206a5861"
     };
 
     firebase.initializeApp(firebaseConfig);
@@ -72,24 +67,24 @@
     const matchForm = document.getElementById('matchForm');
     const matchList = document.getElementById('matchList');
 
-    function loadMatches() {
-      db.collection("matches").orderBy("date", "desc").get().then(snapshot => {
+    // LIVE SYNC WITH SNAPSHOT
+    db.collection("matches").orderBy("date", "desc")
+      .onSnapshot(snapshot => {
         matchList.innerHTML = '';
         snapshot.forEach(doc => {
           const match = doc.data();
           const row = document.createElement('tr');
           row.innerHTML = `
-            <td>${match.date}</td>
-            <td>${match.opponent}</td>
-            <td>${match.matchType}</td>
-            <td>${match.score}</td>
-            <td class="${match.outcome.toLowerCase()}">${match.outcome}</td>
-            <td>${match.remarks}</td>
+            <td>${match.date || ''}</td>
+            <td>${match.opponent || ''}</td>
+            <td>${match.matchType || ''}</td>
+            <td>${match.score || ''}</td>
+            <td class="${match.outcome ? match.outcome.toLowerCase() : ''}">${match.outcome || ''}</td>
+            <td>${match.remarks || ''}</td>
           `;
           matchList.appendChild(row);
         });
       });
-    }
 
     matchForm.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -104,13 +99,10 @@
       try {
         await db.collection("matches").add(match);
         matchForm.reset();
-        loadMatches();
       } catch (error) {
         console.error("Error adding match:", error);
       }
     });
-
-    document.addEventListener('DOMContentLoaded', loadMatches);
   </script>
 </body>
 </html>
