@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Badminton Match Tracker (Cloud Sync)</title>
+  <title>Badminton Match Tracker (Cloud Sync Fixed)</title>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore-compat.js"></script>
   <style>
@@ -73,8 +73,7 @@
     const matchList = document.getElementById('matchList');
 
     function loadMatches() {
-      matchList.innerHTML = '';
-      db.collection("matches").orderBy("date", "desc").onSnapshot(snapshot => {
+      db.collection("matches").orderBy("date", "desc").get().then(snapshot => {
         matchList.innerHTML = '';
         snapshot.forEach(doc => {
           const match = doc.data();
@@ -92,7 +91,7 @@
       });
     }
 
-    matchForm.addEventListener('submit', (e) => {
+    matchForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const match = {
         date: document.getElementById('date').value,
@@ -102,13 +101,16 @@
         outcome: document.getElementById('outcome').value,
         remarks: document.getElementById('remarks').value
       };
-      db.collection("matches").add(match)
-        .then(() => {
-          matchForm.reset();
-        });
+      try {
+        await db.collection("matches").add(match);
+        matchForm.reset();
+        loadMatches();
+      } catch (error) {
+        console.error("Error adding match:", error);
+      }
     });
 
-    loadMatches();
+    document.addEventListener('DOMContentLoaded', loadMatches);
   </script>
 </body>
 </html>
